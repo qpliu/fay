@@ -873,7 +873,12 @@ emitExport spec =
   case spec of
     EVar (UnQual name) -> modify $ \s -> s { stateExports = name : stateExports s }
     EVar _             -> error "Emitted a qualifed export, not supported."
+    EAbs _             -> return ()
+    EThingWith _ cnames -> modify $ \s -> s { stateExports = map cname cnames ++ stateExports s }
     _ -> throwError (UnsupportedExportSpec spec)
+  where
+    cname (ConName name) = name
+    cname (VarName name) = name
 
 --------------------------------------------------------------------------------
 -- Utilities
